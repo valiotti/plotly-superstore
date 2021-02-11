@@ -1,0 +1,25 @@
+{
+  "themeSettings": [
+    {
+      "logo": "https://devtest-ui.ai-surge.cloud/assets/img/ai-surge-logo_1.png",
+      "colour": "#751151",
+      "title": "Динамика показателей Superstore",
+      "description": "Дашборд позволяет посмотреть, откуда прибыль приходит в компанию и где теряются деньги.",
+      "favicon": "assets/images/favicon.ico",
+      "background_image": "assets/images/bg.png",
+      "company_name": "Aisurge Systems"
+    }
+  ],
+  "currency_sign": "$",
+  "number_format": ",",
+  "color_palette": {
+    "palette": "orange_palette",
+    "all possible palettes": [
+      "orange_palette",
+      "red_palette",
+      "blue_palette",
+      "diverging_palette"
+    ]
+  },
+  "tablename": "sales_cockpit_matview_v2"
+}

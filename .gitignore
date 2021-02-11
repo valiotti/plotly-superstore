@@ -1,0 +1,15 @@
+.idea
+venv/
+
+*.db
+*.rar
+*.zip
+*.ipynb
+*.xls
+
+log/
+
+__pycache__/
+
+.env
+features/
