@@ -15,8 +15,8 @@ def filter_data(category, sub_category, segment, start_date, end_date, df):
         filtered_df = filtered_df[filtered_df["Order Date"] >= start_date]
     if end_date is not None:
         filtered_df = filtered_df[filtered_df["Order Date"] <= end_date]
-    # print("UNIQUE DATES", filtered_df["Order Date"].unique())
     filtered_df["Order Date"] = pd.to_datetime(filtered_df["Order Date"])
+    filtered_df["month-year"] = filtered_df["Order Date"].dt.strftime('%Y-%b')
     return filtered_df
 
 

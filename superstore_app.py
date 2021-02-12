@@ -104,7 +104,8 @@ kpis_indicators = dbc.Card(
                                'text-align': 'left',
                                },
                         ),
-                html.H6("Изменение ключевых показателей YoY по отношению к аналогичному месяцу прошлого года.",
+                html.H6("Изменение ключевых показателей YoY по отношению к аналогичному месяцу прошлого года. "
+                        "На фоне отображена динамика за последний год",
                         style={'font-size': 14,
                                'text-align': 'left',
                                'color': '#808080'
@@ -115,30 +116,35 @@ kpis_indicators = dbc.Card(
                               'height': '80%',
                               'width': '16%',
                               'float': 'left',
+                              'margin-right': '4px',
                           }),
                 dcc.Graph(id='sales-indicator',
                           style={
                               'height': '80%',
                               'width': '16%',
                               'float': 'left',
+                              'margin-right': '4px',
                           }),
                 dcc.Graph(id='orders-indicator',
                           style={
                               'height': '80%',
                               'width': '16%',
                               'float': 'left',
+                              'margin-right': '4px',
                           }),
                 dcc.Graph(id='discount-indicator',
                           style={
                               'height': '80%',
                               'width': '16%',
                               'float': 'left',
+                              'margin-right': '4px',
                           }),
                 dcc.Graph(id='clients-indicator',
                           style={
                               'height': '80%',
                               'width': '16%',
                               'float': 'left',
+                              'margin-right': '4px',
 
                           }),
                 dcc.Graph(id='sales-per-client-indicator',
@@ -257,7 +263,7 @@ sales_by_product = dbc.Card([
                                                                               symbol=Symbol.yes, symbol_prefix=u'$')}
                      for i in ["Product Name", "Profit"]],
             style_data_conditional=(
-                    data_bars(df, 'Profit')
+                data_bars(df, 'Profit')
             ),
             style_cell={
                 'width': '100px',
@@ -396,24 +402,6 @@ app.layout = html.Div(children=[
 
 # ---------------------------------------------------------
 # CALLBACKS
-# @app.callback(
-#     [
-#         Output('profit-indicator', 'figure'),
-#         Output('sales-indicator', 'figure'),
-#         Output('orders-indicator', 'figure'),
-#         Output('discount-indicator', 'figure'),
-#         Output('clients-indicator', 'figure'),
-#         Output('sales-per-client-indicator', 'figure'),
-#     ],
-#     [
-#         Input('category_dropdown', 'value'),
-#         Input('sub_category_dropdown', 'value'),
-#         Input('segment_dropdown', 'value'),
-#         Input('date-filter', 'start_date'),
-#         Input('date-filter', 'end_date')
-#     ])
-# def update_kpis(category, sub_category, segment, start_date, end_date):
-#     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
 
 @app.callback(
     Output('profit-indicator', 'figure'),
@@ -608,7 +596,7 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
     end_date = end_date.date()
     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
     filtered_data = filtered_data.groupby("Product Name").agg({"Profit": 'sum'}).reset_index()
-    filtered_data = filtered_data.sort_values("Profit",ascending=False)
+    filtered_data = filtered_data.sort_values("Profit", ascending=False)
     return filtered_data.to_dict('records')
 
 
@@ -629,8 +617,8 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
     end_date = datetime.strptime(end_date, '%Y-%m-%d')
     end_date = end_date.date()
     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
-    filtered_data = filtered_data.groupby(["Customer Segment","Customer Name"]).agg({"Profit": 'sum'}).reset_index()
-    filtered_data = filtered_data.sort_values("Profit",ascending=False)
+    filtered_data = filtered_data.groupby(["Customer Segment", "Customer Name"]).agg({"Profit": 'sum'}).reset_index()
+    filtered_data = filtered_data.sort_values("Profit", ascending=False)
     return filtered_data.to_dict('records')
 
 
