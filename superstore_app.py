@@ -17,6 +17,7 @@ pd.options.display.float_format = '${:.2f}'.format
 card_height_s = '18rem'
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+server=app.server
 with open('config.json', 'r') as f:
     config_file = json.load(f)
 

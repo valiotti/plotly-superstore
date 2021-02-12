@@ -1,11 +1,16 @@
 .idea
 venv/
 
+*.pyc
+.DS_Store
+.env
+
 *.db
 *.rar
 *.zip
 *.ipynb
 *.xls
+*.csv
 
 log/
 
