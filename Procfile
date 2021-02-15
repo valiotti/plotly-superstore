@@ -1,1 +1,1 @@
-web: gunicorn superstore_app.py:serverhe
+web: gunicorn superstore_app:server
