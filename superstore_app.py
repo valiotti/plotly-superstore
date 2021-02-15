@@ -209,14 +209,19 @@ sales_and_profit = dbc.Card([
                        'text-align': 'left',
                        },
                 ),
-        html.H6("Тут динамика по прибыли и продажам",
+        html.H6("Динамика прибыли и продаж за всё время. Жирными точками обозначены прибыль и продажи в выбранном месяце"
+                "и соответствующие данные за предыдущий год.",
                 style={'font-size': 14,
                        'text-align': 'left',
                        'color': '#808080'
                        },
                 ),
-        dcc.Graph(id="sales-profit-bar-chart")
-    ])
+        dcc.Graph(id="sales-profit-bar-chart", style={'height':'24rem'})
+    ],
+        style={
+            'height': card_height,
+        }
+    )
 ])
 
 sales_by_category = dbc.Card([
