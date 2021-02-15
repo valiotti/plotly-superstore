@@ -14,10 +14,10 @@ from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_
 from datetime import datetime
 
 pd.options.display.float_format = '${:.2f}'.format
-card_height_s = '18rem'
+card_height_s = '14rem'
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-server=app.server
+# server=app.server
 with open('config.json', 'r') as f:
     config_file = json.load(f)
 
@@ -26,8 +26,14 @@ tablename = config_file['tablename']
 df = pd.read_csv("superstore.csv", sep=';')
 df = df.dropna()
 df["Order Date"] = pd.to_datetime(df["Order Date"]).dt.date
+# df["Sales"] = df["Sales"].astype(float)
+# df["Profit"] = df["Profit"].astype(float)
+# df["Discount"] = df["Discount"].astype(float)
+# df["Order ID"] = df["Order ID"].astype(int)
 df = df.sort_values("Order Date")
-print(df.columns)
+# print(df.columns)
+print(df.dtypes)
+
 
 available_categories = sorted(df["Product Category"].unique())
 available_sub_categories = sorted(df["Product Sub-Category"].unique())
@@ -114,43 +120,43 @@ kpis_indicators = dbc.Card(
                         ),
                 dcc.Graph(id='profit-indicator',
                           style={
-                              'height': '80%',
+                              'height': '75%',
                               'width': '16%',
                               'float': 'left',
-                              'margin-right': '4px',
+                              'margin-right': '8px',
                           }),
                 dcc.Graph(id='sales-indicator',
                           style={
-                              'height': '80%',
+                              'height': '75%',
                               'width': '16%',
                               'float': 'left',
-                              'margin-right': '4px',
+                              'margin-right': '8px',
                           }),
                 dcc.Graph(id='orders-indicator',
                           style={
-                              'height': '80%',
+                              'height': '75%',
                               'width': '16%',
                               'float': 'left',
-                              'margin-right': '4px',
+                              'margin-right': '8px',
                           }),
                 dcc.Graph(id='discount-indicator',
                           style={
-                              'height': '80%',
+                              'height': '75%',
                               'width': '16%',
                               'float': 'left',
-                              'margin-right': '4px',
+                              'margin-right': '8px',
                           }),
                 dcc.Graph(id='clients-indicator',
                           style={
-                              'height': '80%',
+                              'height': '75%',
                               'width': '16%',
                               'float': 'left',
-                              'margin-right': '4px',
+                              'margin-right': '8px',
 
                           }),
                 dcc.Graph(id='sales-per-client-indicator',
                           style={
-                              'height': '80%',
+                              'height': '75%',
                               'width': '16%',
                               'float': 'left',
                           }),
@@ -624,4 +630,4 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
 
 
 if __name__ == "__main__":
-    app.run_server(port=8888, debug=True)
+    app.run_server(port=8889, debug=True)

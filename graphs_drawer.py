@@ -1,5 +1,5 @@
 import plotly.graph_objects as go
-from funcs import filter_data, get_previous_dates
+from funcs import filter_data, get_previous_dates, kpi_rus
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
@@ -11,12 +11,10 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
 
     prefix = ''
     suffix = ''
-    value_format = '{}'
     if kpi in ["Profit", "Sales", "Sales Per Customer"]:
         prefix = '$'
     if kpi in ["Discount"]:
         suffix = '%'
-        value_format = '.1f'
     if kpi in ["Sales Per Customer"]:
         fig = go.Figure(
             go.Scatter(
@@ -26,8 +24,7 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
                 fill='tozeroy',
                 line_color='#E8E8E8',
                 name='',
-                # text=[f'<b>{prefix}{y}{suffix}' for y in current_year_data.groupby("Customer Name").agg({'Sales': 'mean'})["Sales"]],
-                hovertemplate='Динамика за выбранный период<br>%{text}',
+                hoverinfo='skip'
             )
         )
     elif kpi in ["Customer Name"]:
@@ -40,8 +37,7 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
                 fill='tozeroy',
                 line_color='#E8E8E8',
                 name='',
-                text=[f'<b>{prefix}{value_format.format(y)}{suffix}' for y in current_year_data[kpi]],
-                hovertemplate='Динамика за выбранный период<br>%{text}',
+                hoverinfo='skip',
             )
         )
     elif kpi in ["Discount"]:
@@ -53,8 +49,7 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
                 fill='tozeroy',
                 line_color='#E8E8E8',
                 name='',
-                text=[f'<b>{prefix}{value_format.format(y)}{suffix}' for y in current_year_data[kpi]],
-                hovertemplate='Динамика за выбранный период<br>%{text}',
+                hoverinfo='skip',
             )
         )
 
@@ -67,27 +62,26 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
                 fill='tozeroy',
                 line_color='#E8E8E8',
                 name='',
-                text=[f'<b>{prefix}{value_format.format(y)}{suffix}' for y in current_year_data[kpi]],
-                hovertemplate='Динамика за выбранный период<br>%{text}',
+                hoverinfo='skip',
             )
         )
-
+    print("CV", kpi, cy_value)
+    print("YOY", kpi, yoy_value)
     fig.add_trace(
         go.Indicator(
             mode='number+delta',
             value=cy_value,
-            title={'text': kpi,
-                   'font': {'size': 17, },
+            title={'text': kpi_rus[kpi],
+                   'font': {'size': 18, },
                    },
             number={'prefix': prefix,
                     'suffix': suffix,
-                    'font': {'size': 17, },
+                    'font': {'size': 18, },
                     },
             delta={'position': 'left',
                    'reference': yoy_value,
                    'relative': True,
-                   # 'valueformat': "{:10.4f}",
-                   'font': {'size': 13, },
+                   'font': {'size': 14, },
                    },
             domain={'y': [0, 0.7], 'x': [0.25, 0.75]},
         )

@@ -2,6 +2,15 @@ import pandas as pd
 import datetime
 from dateutil.relativedelta import relativedelta
 
+kpi_rus = {
+    "Sales": "Продажи",
+    "Profit": "Прибыль",
+    "Customer Name": "Клиенты",
+    "Discount": "Скидка",
+    "Order ID": "Заказы",
+    "Sales Per Customer": "Продажи на клиента",
+}
+
 
 def filter_data(category, sub_category, segment, start_date, end_date, df):
     filtered_df = df.copy()
