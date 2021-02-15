@@ -7,8 +7,20 @@ from pandas import Grouper, DatetimeIndex
 from plotly.subplots import make_subplots
 
 
-def create_figure(cy_value, yoy_value, kpi, current_year_data):
+def get_available_categories(category, df, type_to_get):
+    type = ""
+    if type_to_get == "Product Category":
+        type = "Product Sub-Category"
+    elif type_to_get == "Product Sub-Category":
+        type = "Product Category"
+    if category is not None:
+        avlbl_categories = df[df[type] == category][type_to_get].unique()
+    else:
+        avlbl_categories = df[type_to_get].unique()
+    return [{'label': categ, 'value': categ} for categ in sorted(avlbl_categories)]
 
+
+def create_figure(cy_value, yoy_value, kpi, current_year_data):
     prefix = ''
     suffix = ''
     if kpi in ["Profit", "Sales", "Sales Per Customer"]:

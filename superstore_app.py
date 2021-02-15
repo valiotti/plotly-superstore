@@ -11,7 +11,8 @@ from dash_table.Format import Format, Scheme, Symbol
 
 
 from funcs import filter_data, get_previous_dates
-from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars
+from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars, \
+    get_available_categories
 from datetime import datetime
 
 card_height_s = '14rem'
@@ -71,7 +72,6 @@ sub_category_filter = dbc.FormGroup(
             id="sub_category_dropdown",
             placeholder='Все подкатегории',
             value=None,
-            options=[{'label': sub_category, 'value': sub_category} for sub_category in available_sub_categories]
         ),
     ],
     className='form-group col-md-6',
@@ -418,6 +418,21 @@ app.layout = html.Div(children=[
 
 # ---------------------------------------------------------
 # CALLBACKS
+
+@app.callback(
+    Output('sub_category_dropdown', 'options'),
+    Input('category_dropdown', 'value')
+)
+def update_sub_category_dropdown(category):
+    return get_available_categories(category, df, "Product Sub-Category")
+
+
+@app.callback(
+    Output('category_dropdown', 'options'),
+    Input('sub_category_dropdown', 'value')
+)
+def update_category_dropdown(category):
+    return get_available_categories(category, df, "Product Category")
 
 @app.callback(
     Output('profit-indicator', 'figure'),
