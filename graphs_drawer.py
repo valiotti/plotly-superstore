@@ -132,9 +132,22 @@ def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=Non
 
 
 def get_top_province_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales"):
+    names = ["Province"]
+    names.extend(list(df["Province"]))
     filtered_df = filter_data(category, sub_category,segment, start_date, end_date, df)
-    filtered_df = filtered_df.groupby("Province").agg({"Profit" : 'sum', "Sales": 'sum'}).reset_index()
-    fig = px.treemap(filtered_df, path=['Province'], values=type)
+    filtered_df = filtered_df.groupby(["Province"]).agg({"Profit" : 'sum', "Sales": 'sum'}).reset_index()
+    filtered_df = filtered_df.append({"Province": "Province", "Profit":1, "Sales":1}, ignore_index=True)
+    fig = px.treemap(filtered_df, path=['Province'], values=type, color=type,
+                     color_continuous_scale=px.colors.sequential.Blues,
+                     )
+
+    fig.update_layout(
+        margin=dict(l=0, r=0, b=0, t=0),
+        autosize=True,
+    )
+
+    fig.data[0].hovertemplate = '<b></b>%{label}' + '<br>' + kpi_rus[type] + ' %{value}'
+
     return fig
 
 

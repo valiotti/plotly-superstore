@@ -9,12 +9,13 @@ import json
 import dash_table
 from dash_table.Format import Format, Scheme, Symbol
 
+
 from funcs import filter_data, get_previous_dates
 from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars
 from datetime import datetime
 
-pd.options.display.float_format = '${:.2f}'.format
 card_height_s = '14rem'
+card_height = '32rem'
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 # server=app.server
@@ -192,10 +193,13 @@ top_provinces = dbc.Card(
                 ], width=4)
             ]),
             dbc.Row([
-                dbc.Col(dcc.Graph(id="top-province-bubble-chart"))
+                dbc.Col(dcc.Graph(id="top-province-bubble-chart",style={'height':'24rem'}))
             ])
-
-        ])
+        ],
+            style={
+                'height': card_height,
+            }
+        )
     ])
 
 sales_and_profit = dbc.Card([
