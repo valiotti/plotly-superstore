@@ -1,10 +1,8 @@
-import plotly.graph_objects as go
 from funcs import filter_data, get_previous_dates, kpi_rus
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
-from pandas import Grouper, DatetimeIndex
-from plotly.subplots import make_subplots
+import numpy as np
 
 
 def get_available_categories(category, df, type_to_get):
@@ -172,12 +170,6 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
     yoy_sales = filtered_df_ly["Sales"].values
     yoy_profit = filtered_df_ly["Profit"].values
 
-    print(filtered_df["Order Date"].unique())
-    # current_sales = filtered_df[filtered_df["month-year"] == start_date.strftime("%Y-%b")]["Sales"].values
-    # current_profit = filtered_df[filtered_df["month-year"] == start_date.strftime("%Y-%b")]["Profit"].values
-    # yoy_sales = filtered_df[filtered_df["month-year"] == prev_start_date.strftime("%Y-%b")]["Sales"].values
-    # yoy_profit = filtered_df[filtered_df["month-year"] == prev_start_date.strftime("%Y-%b")]["Profit"].values
-
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
                              y=filtered_df["Sales"],
@@ -231,7 +223,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
 
 
 def data_bars(df, column):
-    n_bins = 100
+    n_bins = len(df[column])
     bounds = [i * (1.0 / n_bins) for i in range(n_bins + 1)]
     ranges = [
         ((df[column].max() - df[column].min()) * i) + df[column].min()
@@ -259,8 +251,76 @@ def data_bars(df, column):
                     white 100%)
                 """.format(max_bound_percentage=max_bound_percentage)
             ),
+            'paddingBottom': 4,
+            'paddingTop': 4
+        })
+
+    return styles
+
+
+def data_bars_diverging(df, column, color_above='#0074D9', color_below='#FF4136'):
+    neg_count = len(df[df[column] <= 0]) + 1
+    pos_count = len(df[df[column] > 0])
+    bounds_neg = np.linspace(0, 0.5, neg_count)
+    bounds_pos = np.linspace(0.5, 1, pos_count)
+    bounds = np.concatenate((bounds_neg, bounds_pos),axis=0)
+    ranges = sorted(df[column])
+    index = 0
+    for i in range(1, len(ranges)):
+        if ranges[i-1] < 0 and ranges[i] > 0:
+            index = i
+    ranges.insert(index, 0)
+
+    midpoint = 0
+
+    styles = []
+    for i in range(1, len(bounds)):
+        min_bound = ranges[i - 1]
+        max_bound = ranges[i]
+        min_bound_percentage = bounds[i - 1] * 100
+        max_bound_percentage = bounds[i] * 100
+        style = {
+            'if': {
+                'filter_query': (
+                    '{{{column}}} >= {min_bound}' +
+                    (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
+                ).format(column=column, min_bound=min_bound, max_bound=max_bound),
+                'column_id': column
+            },
             'paddingBottom': 2,
             'paddingTop': 2
-        })
+        }
+        if max_bound > midpoint:
+            background = (
+                """
+                    linear-gradient(90deg,
+                    white 0%,
+                    white 50%,
+                    {color_above} 50%,
+                    {color_above} {max_bound_percentage}%,
+                    white {max_bound_percentage}%,
+                    white 100%)
+                """.format(
+                    max_bound_percentage=max_bound_percentage,
+                    color_above=color_above
+                )
+            )
+        else:
+            background = (
+                """
+                    linear-gradient(90deg,
+                    white 0%,
+                    white {min_bound_percentage}%,
+                    {color_below} {min_bound_percentage}%,
+                    {color_below} 50%,
+                    white 50%,
+                    white 100%)
+                """.format(
+                    min_bound_percentage=min_bound_percentage,
+                    color_below=color_below
+                )
+            )
+        style['background'] = background
+        styles.append(style)
 
     return styles

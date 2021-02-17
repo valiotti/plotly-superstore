@@ -10,9 +10,9 @@ import dash_table
 from dash_table.Format import Format, Scheme, Symbol
 
 
-from funcs import filter_data, get_previous_dates
+from funcs import filter_data
 from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars, \
-    get_available_categories
+    get_available_categories,data_bars_diverging
 from datetime import datetime
 
 card_height_s = '14rem'
@@ -34,7 +34,9 @@ df["Order Date"] = pd.to_datetime(df["Order Date"]).dt.date
 # df["Order ID"] = df["Order ID"].astype(int)
 df = df.sort_values("Order Date")
 # print(df.columns)
-print(df.dtypes)
+# print(df.dtypes)
+# print(df.columns)
+# print(df.dtypes)
 
 
 available_categories = sorted(df["Product Category"].unique())
@@ -245,7 +247,7 @@ sales_by_category = dbc.Card([
                      for i in ["Product Category", "Product Sub-Category", "Sales", "Profit"]],
             style_data_conditional=(
                     data_bars(df, 'Sales') +
-                    data_bars(df, 'Profit')
+                    data_bars_diverging(df, 'Profit')
             ),
             style_cell={
                 'width': '100px',
@@ -254,9 +256,14 @@ sales_by_category = dbc.Card([
                 'overflow': 'hidden',
                 'textOverflow': 'ellipsis',
             },
-            page_size=20,
+            page_action='none',
+            style_table={'height': '22rem', 'overflowY': 'auto'}
         )
-    ])
+    ],
+        style={
+            'height': card_height,
+        }
+    )
 ])
 
 sales_by_product = dbc.Card([
@@ -279,7 +286,7 @@ sales_by_product = dbc.Card([
                                                                               symbol=Symbol.yes, symbol_prefix=u'$')}
                      for i in ["Product Name", "Profit"]],
             style_data_conditional=(
-                data_bars(df, 'Profit')
+                data_bars_diverging(df, 'Profit')
             ),
             style_cell={
                 'width': '100px',
@@ -287,11 +294,22 @@ sales_by_product = dbc.Card([
                 'maxWidth': '100px',
                 'overflow': 'hidden',
                 'textOverflow': 'ellipsis',
+                'text-align': 'left',
             },
-            page_size=15,
+            style_header={
+                'backgroundColor': 'white',
+                'fontWeight': 'bold',
+                'text-align': 'left',
+            },
+            page_action='none',
+            style_table={'height': '22rem', 'overflowY': 'auto'},
         )
 
-    ])
+    ],
+        style={
+            'height': card_height,
+        }
+    )
 ])
 
 clients_profit = dbc.Card([
@@ -303,7 +321,7 @@ clients_profit = dbc.Card([
                                                                               symbol=Symbol.yes, symbol_prefix=u'$')}
                      for i in ["Customer Segment", "Customer Name", "Profit"]],
             style_data_conditional=(
-                data_bars(df, 'Profit')
+                data_bars_diverging(df, 'Profit')
             ),
             style_cell={
                 'width': '100px',
@@ -312,9 +330,14 @@ clients_profit = dbc.Card([
                 'overflow': 'hidden',
                 'textOverflow': 'ellipsis',
             },
-            page_size=15,
+            page_action='none',
+            style_table={'height': '22rem', 'overflowY': 'auto'}
         )
-    ])
+    ],
+        style={
+            'height': card_height,
+        }
+    )
 ])
 # --------------------------------------
 # LAYOUT
@@ -588,7 +611,9 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
 
 
 @app.callback(
-    Output('category-sales', 'data'),
+    [Output('category-sales', 'data'),
+     Output('category-sales','style_data_conditional')
+         ],
     [
         Input('category_dropdown', 'value'),
         Input('sub_category_dropdown', 'value'),
@@ -606,7 +631,10 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
     filtered_data = filtered_data.groupby(["Product Category", "Product Sub-Category"]).agg(
         {"Sales": 'sum', "Profit": 'sum'}).reset_index()
-    return filtered_data.to_dict('records')
+
+    return filtered_data.to_dict('records'), (data_bars(filtered_data, 'Sales') +
+                    data_bars_diverging(filtered_data, 'Profit')
+            ),
 
 
 @app.callback(
@@ -632,7 +660,9 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
 
 
 @app.callback(
-    Output('top-clients', 'data'),
+    [Output('top-clients', 'data'),
+     Output('top-clients', 'style_data_conditional')
+         ],
     [
         Input('category_dropdown', 'value'),
         Input('sub_category_dropdown', 'value'),
@@ -650,7 +680,7 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
     filtered_data = filtered_data.groupby(["Customer Segment", "Customer Name"]).agg({"Profit": 'sum'}).reset_index()
     filtered_data = filtered_data.sort_values("Profit", ascending=False)
-    return filtered_data.to_dict('records')
+    return filtered_data.to_dict('records'), data_bars_diverging(filtered_data, "Profit")
 
 
 if __name__ == "__main__":
