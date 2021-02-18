@@ -1,3 +1,4 @@
+from datetime import datetime
 from funcs import filter_data, get_previous_dates, kpi_rus
 import plotly.graph_objects as go
 import plotly.express as px
@@ -28,8 +29,11 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
     if kpi in ["Sales Per Customer"]:
         fig = go.Figure(
             go.Scatter(
-                x=sorted(current_year_data.groupby(pd.Grouper(key='Order Date',freq='M')).agg({'Sales':'mean'}).reset_index()["Order Date"].unique()),
-                y=current_year_data.groupby(pd.Grouper(key='Order Date',freq='M')).agg({'Sales':'mean'}).reset_index()["Sales"],
+                x=sorted(current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg(
+                    {'Sales': 'mean'}).reset_index()["Order Date"].unique()),
+                y=
+                current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({'Sales': 'mean'}).reset_index()[
+                    "Sales"],
                 mode='lines',
                 fill='tozeroy',
                 line_color='#E8E8E8',
@@ -40,7 +44,8 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
     elif kpi in ["Customer Name"]:
         fig = go.Figure(
             go.Scatter(
-                x=sorted(current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'count'}).reset_index()[
+                x=sorted(
+                    current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'count'}).reset_index()[
                         "Order Date"].unique()),
                 y=current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'count'})[kpi],
                 mode='lines',
@@ -53,8 +58,10 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
     elif kpi in ["Discount"]:
         fig = go.Figure(
             go.Scatter(
-                x=current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'mean'}).reset_index()["Order Date"].unique(),
-                y=current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'mean'}).reset_index()["Discount"],
+                x=current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'mean'}).reset_index()[
+                    "Order Date"].unique(),
+                y=current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'mean'}).reset_index()[
+                    "Discount"],
                 mode='lines',
                 fill='tozeroy',
                 line_color='#E8E8E8',
@@ -66,8 +73,10 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
     else:
         fig = go.Figure(
             go.Scatter(
-                x=sorted(current_year_data.groupby(pd.Grouper(key='Order Date',freq='M')).agg({kpi:'sum'}).reset_index()["Order Date"].unique()),
-                y=current_year_data.groupby(pd.Grouper(key='Order Date',freq='M')).agg({kpi:'sum'})[kpi],
+                x=sorted(
+                    current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'sum'}).reset_index()[
+                        "Order Date"].unique()),
+                y=current_year_data.groupby(pd.Grouper(key='Order Date', freq='M')).agg({kpi: 'sum'})[kpi],
                 mode='lines',
                 fill='tozeroy',
                 line_color='#E8E8E8',
@@ -106,13 +115,11 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
 
 
 def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=None, sub_category=None):
-    filtered_df = filter_data(category, sub_category,segment, start_date, end_date, df)
     prev_start_date, prev_end_date = get_previous_dates(start_date, end_date)
+    filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df)
     yoy_df = filter_data(category, sub_category, segment, prev_start_date, prev_end_date, df)
     year_data = filter_data(category, sub_category, segment, prev_start_date, end_date, df)
-    # data_for_graph = filter_data(category, sub_category, segment, prev_start_date, end_date, df)
     if kpi in ["Profit", "Sales"]:
-        # print("YOY ", kpi, yoy_df[kpi].sum())
         fig = create_figure(filtered_df[kpi].sum(), yoy_df[kpi].sum(), kpi, year_data)
     elif kpi in ["Discount"]:
         fig = create_figure(filtered_df[kpi].mean() * 100, yoy_df[kpi].mean() * 100, kpi, year_data)
@@ -142,9 +149,8 @@ def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=Non
 def get_top_province_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales"):
     names = ["Province"]
     names.extend(list(df["Province"]))
-    filtered_df = filter_data(category, sub_category,segment, start_date, end_date, df)
-    filtered_df = filtered_df.groupby(["Province"]).agg({"Profit" : 'sum', "Sales": 'sum'}).reset_index()
-    filtered_df = filtered_df.append({"Province": "Province", "Profit":1, "Sales":1}, ignore_index=True)
+    filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df)
+    filtered_df = filtered_df.groupby(["Province"]).agg({"Profit": 'sum', "Sales": 'sum'}).reset_index()
     fig = px.treemap(filtered_df, path=['Province'], values=type, color=type,
                      color_continuous_scale=px.colors.sequential.Blues,
                      )
@@ -160,51 +166,76 @@ def get_top_province_graph(df, start_date, end_date, segment=None, category=None
 
 
 def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None, sub_category=None):
-    filtered_df = filter_data(category, sub_category,segment, None, None, df)
     prev_start_date, _ = get_previous_dates(start_date, end_date)
-    filtered_df = filtered_df.groupby(pd.Grouper(key='Order Date', freq='M')).agg({"Profit" : 'sum', "Sales": 'sum'}).reset_index()
-    filtered_df_cy = filtered_df[(filtered_df["Order Date"].dt.month == start_date.month) & (filtered_df["Order Date"].dt.year == start_date.year)]
-    filtered_df_ly = filtered_df[(filtered_df["Order Date"].dt.month == prev_start_date.month) & (filtered_df["Order Date"].dt.year == prev_start_date.year)]
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+
+    filtered_df = filter_data(category, sub_category, segment, None, None, df)
+    filtered_df = filtered_df.groupby(pd.Grouper(key='Order Date', freq='M')).agg(
+        {"Profit": 'sum', "Sales": 'sum'}).reset_index()
+    filtered_df_cy = filtered_df[(filtered_df["Order Date"].dt.month == start_date.month) & (
+            filtered_df["Order Date"].dt.year == start_date.year)]
+    filtered_df_ly = filtered_df[(filtered_df["Order Date"].dt.month == prev_start_date.month) & (
+            filtered_df["Order Date"].dt.year == prev_start_date.year)]
     current_sales = filtered_df_cy["Sales"].values
     current_profit = filtered_df_cy["Profit"].values
     yoy_sales = filtered_df_ly["Sales"].values
     yoy_profit = filtered_df_ly["Profit"].values
-
+    filtered_df["formatted_date"] = filtered_df["Order Date"].dt.strftime("%b-%Y")
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
                              y=filtered_df["Sales"],
                              mode='lines',
                              name='Продажи',
-                             line={'color': 'blue'}),
+                             line={'color': '#0074D9'},
+                             text=filtered_df["formatted_date"],
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             )
                   )
     fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
                              y=filtered_df["Profit"],
                              mode='lines',
                              name='Прибыль',
-                             line={'color':'green'}))
+                             line={'color': 'green'},
+                             text=filtered_df["formatted_date"],
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             ),
+                  ),
+
     fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
                              y=current_sales, mode='markers',
                              name='Продажи текущий год',
-                             marker={'size':10,
-                                     'color': 'blue'}))
+                             marker={'size': 10,
+                                     'color': '#0074D9'},
+                             text=[start_date.strftime("%b-%Y")],
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             ))
     fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
                              y=current_profit,
                              mode='markers',
                              name='Прибыль текущий год',
-                             marker={'size':10,
-                                     'color': 'green'}))
+                             marker={'size': 10,
+                                     'color': 'green'},
+                             text=[start_date.strftime("%b-%Y")],
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             ))
     fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
                              y=yoy_sales,
                              mode='markers',
                              name='Продажи YOY',
-                             marker={'size':10,
-                                     'color':'#77dde7'}))
+                             marker={'size': 10,
+                                     'color': '#77dde7'},
+                             text=[prev_start_date.strftime("%b-%Y")],
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             ))
     fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
                              y=yoy_profit,
                              mode='markers',
                              name='Прибыль YOY',
-                             marker={'size':10,
-                                     'color':'#8ccb5e'}))
+                             marker={'size': 10,
+                                     'color': '#8ccb5e'},
+                             text=[prev_start_date.strftime("%b-%Y")],
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             ))
 
     fig.update_layout(
         margin=dict(l=0, r=0, b=0, t=0),
@@ -212,11 +243,11 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
         xaxis_title='Дата',
         yaxis_title='Продажи/Прибыль',
         xaxis={
-            'tickmode':'array',
-            'tickvals':sorted([date for i, date in enumerate(filtered_df["Order Date"].values) if i%2 == 0]),
-            'ticktext':[date for i, date in enumerate(filtered_df["Order Date"].dt.strftime("%b-%Y")) if i%2 == 0],
+            'tickmode': 'array',
+            'tickvals': sorted([date for i, date in enumerate(filtered_df["Order Date"].values) if i % 2 == 0]),
+            'ticktext': [date for i, date in enumerate(filtered_df["formatted_date"]) if i % 2 == 0],
             'tickangle': 30,
-        }
+        },
     )
 
     return fig
@@ -237,8 +268,8 @@ def data_bars(df, column):
         styles.append({
             'if': {
                 'filter_query': (
-                    '{{{column}}} >= {min_bound}' +
-                    (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
+                        '{{{column}}} >= {min_bound}' +
+                        (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
                 ).format(column=column, min_bound=min_bound, max_bound=max_bound),
                 'column_id': column
             },
@@ -258,19 +289,16 @@ def data_bars(df, column):
     return styles
 
 
-def data_bars_diverging(df, column, color_above='#0074D9', color_below='#FF4136'):
+def data_bars_diverging(df, column, color_above='#0074D9', color_below='#0074D9'):
     neg_count = len(df[df[column] <= 0]) + 1
     pos_count = len(df[df[column] > 0])
     bounds_neg = np.linspace(0, 0.5, neg_count)
     bounds_pos = np.linspace(0.5, 1, pos_count)
-    bounds = np.concatenate((bounds_neg, bounds_pos),axis=0)
-    ranges = sorted(df[column])
-    index = 0
-    for i in range(1, len(ranges)):
-        if ranges[i-1] < 0 and ranges[i] > 0:
-            index = i
-    ranges.insert(index, 0)
+    bounds = np.concatenate((bounds_neg, bounds_pos), axis=0)
 
+    ranges = df[column].to_list()
+    ranges.append(0)
+    ranges = sorted(ranges)
     midpoint = 0
 
     styles = []
@@ -282,13 +310,13 @@ def data_bars_diverging(df, column, color_above='#0074D9', color_below='#FF4136'
         style = {
             'if': {
                 'filter_query': (
-                    '{{{column}}} >= {min_bound}' +
-                    (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
+                        '{{{column}}} >= {min_bound}' +
+                        (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
                 ).format(column=column, min_bound=min_bound, max_bound=max_bound),
                 'column_id': column
             },
-            'paddingBottom': 2,
-            'paddingTop': 2
+            'paddingBottom': 8,
+            'paddingTop': 8,
         }
         if max_bound > midpoint:
             background = (
@@ -322,5 +350,6 @@ def data_bars_diverging(df, column, color_above='#0074D9', color_below='#FF4136'
             )
         style['background'] = background
         styles.append(style)
-
     return styles
+
+# def get_data_to_table(segment, category, sub_category, start_date, end_date, df):

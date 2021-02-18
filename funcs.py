@@ -1,5 +1,4 @@
-import pandas as pd
-import datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 kpi_rus = {
@@ -9,6 +8,10 @@ kpi_rus = {
     "Discount": "Скидка",
     "Order ID": "Заказы",
     "Sales Per Customer": "Продажи на клиента",
+    "Product Name": "Название товара",
+    "Customer Segment": "Сегмент клиента",
+    "Product Category": "Категория товара",
+    "Product Sub-Category": "Подкатегория товара",
 }
 
 
@@ -21,15 +24,20 @@ def filter_data(category, sub_category, segment, start_date, end_date, df):
     if segment is not None:
         filtered_df = filtered_df[filtered_df["Customer Segment"] == segment]
     if start_date is not None:
+        if type(start_date) == str:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
         filtered_df = filtered_df[filtered_df["Order Date"] >= start_date]
     if end_date is not None:
+        if type(end_date) == str:
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
         filtered_df = filtered_df[filtered_df["Order Date"] <= end_date]
-    filtered_df["Order Date"] = pd.to_datetime(filtered_df["Order Date"])
-    filtered_df["month-year"] = filtered_df["Order Date"].dt.strftime('%Y-%b')
     return filtered_df
 
 
 def get_previous_dates(start_date, end_date):
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
     prev_start_date = start_date - relativedelta(years=1)
     prev_end_date = end_date - relativedelta(years=1)
     return prev_start_date, prev_end_date
