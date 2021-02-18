@@ -14,8 +14,8 @@ from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_
 
 card_height_s = '14rem'
 card_height = '32rem'
+app = dash.Dash(external_stylesheets=["/assets/html-components.css",dbc.themes.LITERA])
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 # server=app.server
 with open('config.json', 'r') as f:
     config_file = json.load(f)
@@ -246,6 +246,7 @@ sales_by_category = dbc.Card([
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
+
             },
             page_action='none',
             style_table={'height': '24rem', 'overflowY': 'auto'}
@@ -433,7 +434,7 @@ app.layout = html.Div(children=[
     )
 ],
     style={'margin-left': '16px',
-           'margin-right': '16px'}
+           'margin-right': '16px',}
 )
 
 
@@ -639,4 +640,4 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
 
 
 if __name__ == "__main__":
-    app.run_server(port=8889, debug=False)
+    app.run_server(port=8889, debug=True)
