@@ -10,7 +10,6 @@ venv/
 *.zip
 *.ipynb
 *.xls
-*.csv
 
 log/
 

@@ -16,7 +16,7 @@ card_height_s = '14rem'
 card_height = '32rem'
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-# server=app.server
+server=app.server
 with open('config.json', 'r') as f:
     config_file = json.load(f)
 
