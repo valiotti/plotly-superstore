@@ -11,6 +11,7 @@ from dash_table.Format import Format, Scheme, Symbol
 from funcs import filter_data, kpi_rus
 from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars, \
     get_available_categories, data_bars_diverging
+import time
 
 card_height_s = '14rem'
 card_height = '32rem'
@@ -184,7 +185,7 @@ top_provinces = dbc.Card(
                             ),
                     html.H6(
                         "Размер соответствует продажам или прибыли. Переключаться между продажами и прибылью можно с "
-                        "помощью фильтра.",
+                        "помощью фильтра. Кликните на прямоугольник, чтобы отфильтровать по провинции.",
                         style={'font-size': 14,
                                'text-align': 'left',
                                'color': '#808080'
@@ -378,7 +379,6 @@ clients_profit = dbc.Card([
                     },
                     page_action='none',
                     style_table={'height': '24rem', 'overflowY': 'auto'},
-                    virtualization=True,
                 )
             )
         )
@@ -488,8 +488,7 @@ def update_sub_category_dropdown(category):
 )
 def update_category_dropdown(category):
     return get_available_categories(category, df, "Product Category")
-
-
+#
 @app.callback(
     Output('profit-indicator', 'figure'),
     [
@@ -497,11 +496,12 @@ def update_category_dropdown(category):
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_profit_indicator(category, sub_category, segment, start_date, end_date):
-    return get_indicator_plot(df, start_date, end_date, "Profit", segment, category, sub_category)
+def update_profit_indicator(category, sub_category, segment, start_date, end_date, province):
+    return get_indicator_plot(df, start_date, end_date, "Profit", segment, category, sub_category, province)
 
 
 @app.callback(
@@ -511,11 +511,12 @@ def update_profit_indicator(category, sub_category, segment, start_date, end_dat
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_sales_indicator(category, sub_category, segment, start_date, end_date):
-    return get_indicator_plot(df, start_date, end_date, "Sales", segment, category, sub_category)
+def update_sales_indicator(category, sub_category, segment, start_date, end_date, province):
+    return get_indicator_plot(df, start_date, end_date, "Sales", segment, category, sub_category, province)
 
 
 @app.callback(
@@ -525,11 +526,12 @@ def update_sales_indicator(category, sub_category, segment, start_date, end_date
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_profit_indicator(category, sub_category, segment, start_date, end_date):
-    return get_indicator_plot(df, start_date, end_date, "Order ID", segment, category, sub_category)
+def update_profit_indicator(category, sub_category, segment, start_date, end_date, province):
+    return get_indicator_plot(df, start_date, end_date, "Order ID", segment, category, sub_category, province)
 
 
 @app.callback(
@@ -539,11 +541,12 @@ def update_profit_indicator(category, sub_category, segment, start_date, end_dat
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_profit_indicator(category, sub_category, segment, start_date, end_date):
-    return get_indicator_plot(df, start_date, end_date, "Discount", segment, category, sub_category)
+def update_profit_indicator(category, sub_category, segment, start_date, end_date, province):
+    return get_indicator_plot(df, start_date, end_date, "Discount", segment, category, sub_category, province)
 
 
 @app.callback(
@@ -553,11 +556,12 @@ def update_profit_indicator(category, sub_category, segment, start_date, end_dat
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_profit_indicator(category, sub_category, segment, start_date, end_date):
-    return get_indicator_plot(df, start_date, end_date, "Customer Name", segment, category, sub_category)
+def update_profit_indicator(category, sub_category, segment, start_date, end_date, province):
+    return get_indicator_plot(df, start_date, end_date, "Customer Name", segment, category, sub_category, province)
 
 
 @app.callback(
@@ -567,11 +571,12 @@ def update_profit_indicator(category, sub_category, segment, start_date, end_dat
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_profit_indicator(category, sub_category, segment, start_date, end_date):
-    return get_indicator_plot(df, start_date, end_date, "Sales Per Customer", segment, category, sub_category)
+def update_profit_indicator(category, sub_category, segment, start_date, end_date, province):
+    return get_indicator_plot(df, start_date, end_date, "Sales Per Customer", segment, category, sub_category, province)
 
 
 @app.callback(
@@ -597,11 +602,12 @@ def update_province_graph(category, sub_category, segment, start_date, end_date,
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
         Input('date-filter', 'end_date'),
-        Input('sales_profit_dropdown_for_line', 'value')
+        Input('sales_profit_dropdown_for_line', 'value'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_sales_profit_graph(category, sub_category, segment, start_date, end_date, type):
-    return get_sales_profit_graph(df, start_date, end_date, segment, category, sub_category, type)
+def update_sales_profit_graph(category, sub_category, segment, start_date, end_date, type, province):
+    return get_sales_profit_graph(df, start_date, end_date, segment, category, sub_category, type, province)
 
 
 @app.callback(
@@ -614,11 +620,12 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_sales_profit_graph(category, sub_category, segment, start_date, end_date):
-    filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
+def update_sales_profit_graph(category, sub_category, segment, start_date, end_date, province):
+    filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df, province)
     filtered_data = filtered_data.groupby(["Product Category", "Product Sub-Category"]).agg(
         {"Sales": 'sum', "Profit": 'sum'}).reset_index()
     return filtered_data.to_dict('records'), (
@@ -637,10 +644,11 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
         Input('date-filter', 'start_date'),
         Input('date-filter', 'end_date'),
         Input('top-product-sales', 'sort_by'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_sales_profit_graph(category, sub_category, segment, start_date, end_date, sort_by):
-    filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
+def update_top_product_graph(category, sub_category, segment, start_date, end_date, sort_by, province):
+    filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df, province)
     filtered_data = filtered_data.groupby("Product Name").agg({"Profit": 'sum'}).reset_index()
     if len(sort_by):
         filtered_data = filtered_data.sort_values(sort_by[0]['column_id'],
@@ -660,13 +668,14 @@ def update_sales_profit_graph(category, sub_category, segment, start_date, end_d
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
         Input('date-filter', 'end_date'),
-        Input('top-clients', 'sort_by')
+        Input('top-clients', 'sort_by'),
+        Input('top-province-bubble-chart', 'clickData'),
     ]
 )
-def update_sales_profit_graph(category, sub_category, segment, start_date, end_date, sort_by):
-    filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df)
+def update_top_clients_graph(category, sub_category, segment, start_date, end_date, sort_by, province):
+    filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df, province)
     filtered_data = filtered_data.groupby(["Customer Segment", "Customer Name"]).agg({"Profit": 'sum'}).reset_index()
-    if len(sort_by):
+    if len(sort_by) != 0 and province is not None:
         filtered_data = filtered_data.sort_values(sort_by[0]['column_id'],
                                                   ascending=sort_by[0]['direction'] == 'asc',
                                                   inplace=False)

@@ -114,11 +114,11 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
     return fig
 
 
-def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=None, sub_category=None):
+def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=None, sub_category=None, province=None):
     prev_start_date, prev_end_date = get_previous_dates(start_date, end_date)
-    filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df)
-    yoy_df = filter_data(category, sub_category, segment, prev_start_date, prev_end_date, df)
-    year_data = filter_data(category, sub_category, segment, prev_start_date, end_date, df)
+    filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df, province)
+    yoy_df = filter_data(category, sub_category, segment, prev_start_date, prev_end_date, df, province)
+    year_data = filter_data(category, sub_category, segment, prev_start_date, end_date, df, province)
     if kpi in ["Profit", "Sales"]:
         fig = create_figure(filtered_df[kpi].sum(), yoy_df[kpi].sum(), kpi, year_data)
     elif kpi in ["Discount"]:
@@ -149,7 +149,7 @@ def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=Non
 def get_top_province_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales"):
     names = ["Province"]
     names.extend(list(df["Province"]))
-    filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df)
+    filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df, None)
     filtered_df = filtered_df.groupby(["Province"]).agg({"Profit": 'sum', "Sales": 'sum'}).reset_index()
     fig = px.treemap(filtered_df, path=['Province'], values=type, color=type,
                      color_continuous_scale=px.colors.sequential.Blues,
@@ -161,15 +161,15 @@ def get_top_province_graph(df, start_date, end_date, segment=None, category=None
     )
 
     fig.data[0].hovertemplate = '<b></b>%{label}' + '<br>' + kpi_rus[type] + ' %{value}'
-
     return fig
 
 
-def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales"):
+def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales",
+                           province=None):
     prev_start_date, _ = get_previous_dates(start_date, end_date)
     start_date = datetime.strptime(start_date, '%Y-%m-%d')
 
-    filtered_df = filter_data(category, sub_category, segment, None, None, df)
+    filtered_df = filter_data(category, sub_category, segment, None, None, df, province)
     filtered_df = filtered_df.groupby(pd.Grouper(key='Order Date', freq='M')).agg(
         {type: 'sum'}).reset_index()
     filtered_df_cy = filtered_df[(filtered_df["Order Date"].dt.month == start_date.month) & (
@@ -178,10 +178,6 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
             filtered_df["Order Date"].dt.year == prev_start_date.year)]
     current_value = filtered_df_cy[type].values
     yoy_value = filtered_df_ly[type].values
-    # current_sales = filtered_df_cy["Sales"].values
-    # current_profit = filtered_df_cy["Profit"].values
-    # yoy_sales = filtered_df_ly["Sales"].values
-    # yoy_profit = filtered_df_ly["Profit"].values
     filtered_df["formatted_date"] = filtered_df["Order Date"].dt.strftime("%b-%Y")
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
@@ -193,15 +189,6 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
                              )
                   )
-    # fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
-    #                          y=filtered_df["Profit"],
-    #                          mode='lines',
-    #                          name='Прибыль',
-    #                          line={'color': 'green'},
-    #                          text=filtered_df["formatted_date"],
-    #                          hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
-    #                          ),
-    #               ),
 
     fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
                              y=current_value, mode='markers',
@@ -211,15 +198,6 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              text=[start_date.strftime("%b-%Y")],
                              hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
                              ))
-    # fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
-    #                          y=current_profit,
-    #                          mode='markers',
-    #                          name='Прибыль текущий год',
-    #                          marker={'size': 10,
-    #                                  'color': 'green'},
-    #                          text=[start_date.strftime("%b-%Y")],
-    #                          hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
-    #                          ))
     fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
                              y=yoy_value,
                              mode='markers',
@@ -229,20 +207,11 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              text=[prev_start_date.strftime("%b-%Y")],
                              hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
                              ))
-    # fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
-    #                          y=yoy_profit,
-    #                          mode='markers',
-    #                          name='Прибыль YOY',
-    #                          marker={'size': 10,
-    #                                  'color': '#8ccb5e'},
-    #                          text=[prev_start_date.strftime("%b-%Y")],
-    #                          hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
-    #                          ))
 
     fig.update_layout(
         margin=dict(l=0, r=0, b=0, t=0),
         autosize=True,
-        yaxis = {
+        yaxis={
             'title': kpi_rus[type],
             'gridcolor': '#e5e5e5',
         },
@@ -262,6 +231,8 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
 
 def data_bars(df, column):
     n_bins = len(df[column])
+    if n_bins == 0:
+        return []
     bounds = [i * (1.0 / n_bins) for i in range(n_bins + 1)]
     ranges = [
         ((df[column].max() - df[column].min()) * i) + df[column].min()
@@ -358,4 +329,3 @@ def data_bars_diverging(df, column, color_above='#0074D9', color_below='#FF4136'
         style['background'] = background
         styles.append(style)
     return styles
-

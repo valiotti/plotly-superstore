@@ -15,7 +15,7 @@ kpi_rus = {
 }
 
 
-def filter_data(category, sub_category, segment, start_date, end_date, df):
+def filter_data(category, sub_category, segment, start_date, end_date, df, province):
     filtered_df = df.copy()
     if category is not None:
         filtered_df = filtered_df[filtered_df["Product Category"] == category]
@@ -23,6 +23,9 @@ def filter_data(category, sub_category, segment, start_date, end_date, df):
         filtered_df = filtered_df[filtered_df["Product Sub-Category"] == sub_category]
     if segment is not None:
         filtered_df = filtered_df[filtered_df["Customer Segment"] == segment]
+    if province is not None:
+        if province["points"][0]["entry"] == '':
+            filtered_df = filtered_df[filtered_df["Province"] == province["points"][0]["id"]]
     if start_date is not None:
         if type(start_date) == str:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
