@@ -160,7 +160,7 @@ def get_top_province_graph(df, start_date, end_date, segment=None, category=None
         autosize=True,
     )
 
-    fig.data[0].hovertemplate = '<b></b>%{label}' + '<br>' + kpi_rus[type] + ' %{value}'
+    fig.data[0].hovertemplate = '<b></b>%{label}' + '<br>' + kpi_rus[type] + ' %{value:$.0f}'
     return fig
 
 
@@ -186,7 +186,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              name=kpi_rus[type],
                              line={'color': '#0074D9'},
                              text=filtered_df["formatted_date"],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.0f}'
                              )
                   )
 
@@ -196,7 +196,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              marker={'size': 10,
                                      'color': '#0074D9'},
                              text=[start_date.strftime("%b-%Y")],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.0f}'
                              ))
     fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
                              y=yoy_value,
@@ -205,7 +205,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              marker={'size': 10,
                                      'color': '#77dde7'},
                              text=[prev_start_date.strftime("%b-%Y")],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+                             hovertemplate='Date %{text}<br>Sales: %{y:$.0f}'
                              ))
 
     fig.update_layout(
