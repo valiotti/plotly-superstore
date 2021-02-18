@@ -39,6 +39,9 @@ date_filter = dbc.FormGroup([
         start_date=date(2010, 4, 1),
         end_date=date(2010, 4, 30),
         display_format='D MMM YYYY',
+        style={
+            'color': "#e5e5e5 !important",
+        }
     )]
 )
 
@@ -329,30 +332,55 @@ sales_by_product = dbc.Card([
 
 clients_profit = dbc.Card([
     dbc.CardBody([
-        dash_table.DataTable(
-            id='top-clients',
-            sort_action='native',
-            sort_by=[{'column_id': "Profit", 'direction': 'desc'}],
-            columns=[{'name': kpi_rus[i], 'id': i, 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed,
-                                                                                       symbol=Symbol.yes,
-                                                                                       symbol_prefix=u'$')}
-                     for i in ["Customer Name", "Profit"]],
-            style_cell={
-                'width': '100px',
-                'minWidth': '100px',
-                'maxWidth': '100px',
-                'overflow': 'hidden',
-                'textOverflow': 'ellipsis',
-                'text-align': 'left',
-            },
-            style_header={
-                'backgroundColor': 'white',
-                'fontWeight': 'bold',
-                'text-align': 'left',
-            },
-            page_action='none',
-            style_table={'height': '24rem', 'overflowY': 'auto'},
-            virtualization=True,
+        dbc.Row([
+            dbc.Col([
+                html.H2("Топ клиентов по прибыли",
+                        style={'font-size': 24,
+                               'text-align': 'left',
+                               },
+                        ),
+                html.H6("Имена клиентов, отсортированные по прибыли. Выберите из списка определенный сегмент, "
+                        "чтобы увидеть клиентов только по нему.",
+                        style={'font-size': 14,
+                               'text-align': 'left',
+                               'color': '#808080'
+                               },
+                        ),
+            ], width=8),
+            dbc.Col([
+                segment_filter,
+            ], width=4),
+        ]),
+        dbc.Row(
+            dbc.Col(
+                dash_table.DataTable(
+                    id='top-clients',
+                    sort_action='native',
+                    sort_by=[{'column_id': "Profit", 'direction': 'desc'}],
+                    columns=[
+                        {'name': kpi_rus[i], 'id': i, 'type': 'numeric',
+                         'format': Format(precision=2, scheme=Scheme.fixed,
+                                          symbol=Symbol.yes,
+                                          symbol_prefix=u'$')}
+                        for i in ["Customer Name", "Profit"]],
+                    style_cell={
+                        'width': '100px',
+                        'minWidth': '100px',
+                        'maxWidth': '100px',
+                        'overflow': 'hidden',
+                        'textOverflow': 'ellipsis',
+                        'text-align': 'left',
+                    },
+                    style_header={
+                        'backgroundColor': 'white',
+                        'fontWeight': 'bold',
+                        'text-align': 'left',
+                    },
+                    page_action='none',
+                    style_table={'height': '24rem', 'overflowY': 'auto'},
+                    virtualization=True,
+                )
+            )
         )
     ],
         style={
@@ -386,7 +414,7 @@ app.layout = html.Div(children=[
             date_filter,
         ], width=2)
     ], style={'margin-top': '8px',
-              'margin-bottom': '16px'}
+              'margin-bottom': '0px'}
     ),
     dbc.Row([
         dbc.Col([
@@ -431,25 +459,6 @@ app.layout = html.Div(children=[
             sales_by_product,
         ], width=6),
     ], style={'margin-bottom': '16px'}),
-    dbc.Row([
-        dbc.Col([
-            html.H2("Топ клиентов по прибыли",
-                    style={'font-size': 24,
-                           'text-align': 'left',
-                           },
-                    ),
-            html.H6("Имена клиентов, отсортированные по прибыли. Выберите из списка определенный сегмент, "
-                    "чтобы увидеть клиентов только по нему.",
-                    style={'font-size': 14,
-                           'text-align': 'left',
-                           'color': '#808080'
-                           },
-                    ),
-        ], width=4),
-        dbc.Col([
-            segment_filter,
-        ], width=2)
-    ]),
     dbc.Row(
         dbc.Col(
             clients_profit,
