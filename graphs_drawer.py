@@ -289,7 +289,7 @@ def data_bars(df, column):
     return styles
 
 
-def data_bars_diverging(df, column, color_above='#0074D9', color_below='#0074D9'):
+def data_bars_diverging(df, column, color_above='#0074D9', color_below='#FF4136'):
     neg_count = len(df[df[column] <= 0]) + 1
     pos_count = len(df[df[column] > 0])
     bounds_neg = np.linspace(0, 0.5, neg_count)
@@ -352,4 +352,3 @@ def data_bars_diverging(df, column, color_above='#0074D9', color_below='#0074D9'
         styles.append(style)
     return styles
 
-# def get_data_to_table(segment, category, sub_category, start_date, end_date, df):
