@@ -14,7 +14,7 @@ from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_
 
 card_height_s = '14rem'
 card_height = '32rem'
-app = dash.Dash(external_stylesheets=["/assets/html-components.css",dbc.themes.LITERA])
+app = dash.Dash(external_stylesheets=["assets/html-components.css", dbc.themes.LITERA])
 
 # server=app.server
 with open('config.json', 'r') as f:
@@ -83,6 +83,17 @@ segment_filter = dbc.FormGroup([
 sales_profit_filter = dbc.FormGroup([
     dcc.Dropdown(
         id="sales_profit_dropdown",
+        value="Sales",
+        options=[{'label': 'Продажи', 'value': 'Sales'}, {'label': 'Прибыль', 'value': 'Profit'}],
+    ),
+
+],
+    style={'max-width': '100%'},
+)
+
+sales_profit_filter_for_line = dbc.FormGroup([
+    dcc.Dropdown(
+        id="sales_profit_dropdown_for_line",
         value="Sales",
         options=[{'label': 'Продажи', 'value': 'Sales'}, {'label': 'Прибыль', 'value': 'Profit'}],
     ),
@@ -193,20 +204,33 @@ top_provinces = dbc.Card(
 
 sales_and_profit = dbc.Card([
     dbc.CardBody([
-        html.H2("Динамика прибыли и продаж",
-                style={'font-size': 24,
-                       'text-align': 'left',
-                       },
+        dbc.Row([
+            dbc.Col([
+                html.H2("Динамика прибыли и продаж",
+                        style={'font-size': 24,
+                               'text-align': 'left',
+                               },
+                        ),
+                html.H6(
+                    "Динамика прибыли и продаж за всё время. Жирными точками обозначены прибыль и продажи в выбранном "
+                    "месяце и соответствующие данные за предыдущий год. Переключаться между прибылью и продажами можно "
+                    "с помощью фильтра",
+                    style={'font-size': 14,
+                           'text-align': 'left',
+                           'color': '#808080',
+                           },
                 ),
-        html.H6(
-            "Динамика прибыли и продаж за всё время. Жирными точками обозначены прибыль и продажи в выбранном месяце"
-            "и соответствующие данные за предыдущий год.",
-            style={'font-size': 14,
-                   'text-align': 'left',
-                   'color': '#808080'
-                   },
-        ),
-        dcc.Graph(id="sales-profit-bar-chart", style={'height': '24rem'})
+            ], width=8),
+            dbc.Col(
+                sales_profit_filter_for_line,
+                width=4,
+            )
+        ]),
+        dbc.Row(
+            dbc.Col(
+                dcc.Graph(id="sales-profit-bar-chart", style={'height': '24rem'}),
+            )
+        )
     ],
         style={
             'height': card_height,
@@ -434,7 +458,7 @@ app.layout = html.Div(children=[
     )
 ],
     style={'margin-left': '16px',
-           'margin-right': '16px',}
+           'margin-right': '16px', }
 )
 
 
@@ -563,11 +587,12 @@ def update_province_graph(category, sub_category, segment, start_date, end_date,
         Input('sub_category_dropdown', 'value'),
         Input('segment_dropdown', 'value'),
         Input('date-filter', 'start_date'),
-        Input('date-filter', 'end_date')
+        Input('date-filter', 'end_date'),
+        Input('sales_profit_dropdown_for_line', 'value')
     ]
 )
-def update_sales_profit_graph(category, sub_category, segment, start_date, end_date):
-    return get_sales_profit_graph(df, start_date, end_date, segment, category, sub_category)
+def update_sales_profit_graph(category, sub_category, segment, start_date, end_date, type):
+    return get_sales_profit_graph(df, start_date, end_date, segment, category, sub_category, type)
 
 
 @app.callback(

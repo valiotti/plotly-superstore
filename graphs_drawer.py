@@ -107,7 +107,7 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
     # SET FONT
     fig.update_layout(autosize=True,
                       font={
-                          'family': 'Lato',
+                          'family': 'Roboto',
                       },
                       )
 
@@ -165,89 +165,96 @@ def get_top_province_graph(df, start_date, end_date, segment=None, category=None
     return fig
 
 
-def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None, sub_category=None):
+def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales"):
     prev_start_date, _ = get_previous_dates(start_date, end_date)
     start_date = datetime.strptime(start_date, '%Y-%m-%d')
 
     filtered_df = filter_data(category, sub_category, segment, None, None, df)
     filtered_df = filtered_df.groupby(pd.Grouper(key='Order Date', freq='M')).agg(
-        {"Profit": 'sum', "Sales": 'sum'}).reset_index()
+        {type: 'sum'}).reset_index()
     filtered_df_cy = filtered_df[(filtered_df["Order Date"].dt.month == start_date.month) & (
             filtered_df["Order Date"].dt.year == start_date.year)]
     filtered_df_ly = filtered_df[(filtered_df["Order Date"].dt.month == prev_start_date.month) & (
             filtered_df["Order Date"].dt.year == prev_start_date.year)]
-    current_sales = filtered_df_cy["Sales"].values
-    current_profit = filtered_df_cy["Profit"].values
-    yoy_sales = filtered_df_ly["Sales"].values
-    yoy_profit = filtered_df_ly["Profit"].values
+    current_value = filtered_df_cy[type].values
+    yoy_value = filtered_df_ly[type].values
+    # current_sales = filtered_df_cy["Sales"].values
+    # current_profit = filtered_df_cy["Profit"].values
+    # yoy_sales = filtered_df_ly["Sales"].values
+    # yoy_profit = filtered_df_ly["Profit"].values
     filtered_df["formatted_date"] = filtered_df["Order Date"].dt.strftime("%b-%Y")
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
-                             y=filtered_df["Sales"],
+                             y=filtered_df[type],
                              mode='lines',
-                             name='Продажи',
+                             name=kpi_rus[type],
                              line={'color': '#0074D9'},
                              text=filtered_df["formatted_date"],
                              hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
                              )
                   )
-    fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
-                             y=filtered_df["Profit"],
-                             mode='lines',
-                             name='Прибыль',
-                             line={'color': 'green'},
-                             text=filtered_df["formatted_date"],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
-                             ),
-                  ),
+    # fig.add_trace(go.Scatter(x=sorted(filtered_df["Order Date"].values),
+    #                          y=filtered_df["Profit"],
+    #                          mode='lines',
+    #                          name='Прибыль',
+    #                          line={'color': 'green'},
+    #                          text=filtered_df["formatted_date"],
+    #                          hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+    #                          ),
+    #               ),
 
     fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
-                             y=current_sales, mode='markers',
-                             name='Продажи текущий год',
+                             y=current_value, mode='markers',
+                             name=f'{kpi_rus[type]} текущий год',
                              marker={'size': 10,
                                      'color': '#0074D9'},
                              text=[start_date.strftime("%b-%Y")],
                              hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
                              ))
-    fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
-                             y=current_profit,
-                             mode='markers',
-                             name='Прибыль текущий год',
-                             marker={'size': 10,
-                                     'color': 'green'},
-                             text=[start_date.strftime("%b-%Y")],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
-                             ))
+    # fig.add_trace(go.Scatter(x=filtered_df_cy["Order Date"].values,
+    #                          y=current_profit,
+    #                          mode='markers',
+    #                          name='Прибыль текущий год',
+    #                          marker={'size': 10,
+    #                                  'color': 'green'},
+    #                          text=[start_date.strftime("%b-%Y")],
+    #                          hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+    #                          ))
     fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
-                             y=yoy_sales,
+                             y=yoy_value,
                              mode='markers',
-                             name='Продажи YOY',
+                             name=f'{kpi_rus[type]} YOY',
                              marker={'size': 10,
                                      'color': '#77dde7'},
                              text=[prev_start_date.strftime("%b-%Y")],
                              hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
                              ))
-    fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
-                             y=yoy_profit,
-                             mode='markers',
-                             name='Прибыль YOY',
-                             marker={'size': 10,
-                                     'color': '#8ccb5e'},
-                             text=[prev_start_date.strftime("%b-%Y")],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
-                             ))
+    # fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
+    #                          y=yoy_profit,
+    #                          mode='markers',
+    #                          name='Прибыль YOY',
+    #                          marker={'size': 10,
+    #                                  'color': '#8ccb5e'},
+    #                          text=[prev_start_date.strftime("%b-%Y")],
+    #                          hovertemplate='Date %{text}<br>Sales: %{y:$.2f}'
+    #                          ))
 
     fig.update_layout(
         margin=dict(l=0, r=0, b=0, t=0),
         autosize=True,
-        xaxis_title='Дата',
-        yaxis_title='Продажи/Прибыль',
+        yaxis = {
+            'title': kpi_rus[type],
+            'gridcolor': '#e5e5e5',
+        },
         xaxis={
+            'title': 'Дата',
             'tickmode': 'array',
             'tickvals': sorted([date for i, date in enumerate(filtered_df["Order Date"].values) if i % 2 == 0]),
             'ticktext': [date for i, date in enumerate(filtered_df["formatted_date"]) if i % 2 == 0],
             'tickangle': 30,
+            'gridcolor': '#e5e5e5',
         },
+        plot_bgcolor='white',
     )
 
     return fig
