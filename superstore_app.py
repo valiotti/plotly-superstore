@@ -311,7 +311,7 @@ clients_profit = dbc.Card([
             columns=[{'name': kpi_rus[i], 'id': i, 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed,
                                                                                        symbol=Symbol.yes,
                                                                                        symbol_prefix=u'$')}
-                     for i in ["Customer Segment", "Customer Name", "Profit"]],
+                     for i in ["Customer Name", "Profit"]],
             style_cell={
                 'width': '100px',
                 'minWidth': '100px',
@@ -335,6 +335,7 @@ clients_profit = dbc.Card([
         }
     )
 ])
+
 # --------------------------------------
 # LAYOUT
 app.layout = html.Div(children=[
@@ -419,15 +420,16 @@ app.layout = html.Div(children=[
                            'color': '#808080'
                            },
                     ),
-        ], width=10),
+        ], width=4),
         dbc.Col([
             segment_filter,
         ], width=2)
     ]),
     dbc.Row(
         dbc.Col(
-            clients_profit
-        ), style={'margin-bottom': '16px'}
+            clients_profit,
+            width=6,
+        ), style={'margin-bottom': '16px'},
     )
 ],
     style={'margin-left': '16px',
