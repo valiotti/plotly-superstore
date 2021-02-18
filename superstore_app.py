@@ -11,13 +11,12 @@ from dash_table.Format import Format, Scheme, Symbol
 from funcs import filter_data, kpi_rus
 from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars, \
     get_available_categories, data_bars_diverging
-import time
 
 card_height_s = '14rem'
 card_height = '32rem'
 app = dash.Dash(external_stylesheets=["assets/html-components.css", dbc.themes.LITERA])
 
-# server=app.server
+server=app.server
 with open('config.json', 'r') as f:
     config_file = json.load(f)
 
