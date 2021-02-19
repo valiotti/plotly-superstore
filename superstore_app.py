@@ -273,11 +273,14 @@ sales_by_category = dbc.Card([
                 'overflow': 'hidden',
                 'textOverflow': 'ellipsis',
                 'text_align': 'left',
+                'font-family': 'sans-serif',
             },
             style_header={
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
+                'font-family': 'sans-serif',
+
             },
             page_action='none',
             style_table={'height': '24rem', 'overflowY': 'auto'}
@@ -317,11 +320,13 @@ sales_by_product = dbc.Card([
                 'overflow': 'hidden',
                 'textOverflow': 'ellipsis',
                 'text-align': 'left',
+                'font-family': 'sans-serif',
             },
             style_header={
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
+                'font-family': 'sans-serif',
             },
             page_action='none',
             style_table={'height': '24rem', 'overflowY': 'auto'},
