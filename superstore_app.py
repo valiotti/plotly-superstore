@@ -276,13 +276,14 @@ sales_by_category = dbc.Card([
                 'textOverflow': 'ellipsis',
                 'text_align': 'left',
                 'font-family': 'sans-serif',
+                'font-size': '14px',
             },
             style_header={
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
                 'font-family': 'sans-serif',
-
+                'font-size': '14px',
             },
             page_action='none',
             style_table={'height': '24rem', 'overflowY': 'auto'}
@@ -323,12 +324,14 @@ sales_by_product = dbc.Card([
                 'textOverflow': 'ellipsis',
                 'text-align': 'left',
                 'font-family': 'sans-serif',
+                'font-size': '14px',
             },
             style_header={
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
                 'font-family': 'sans-serif',
+                'font-size': '14px',
             },
             page_action='none',
             style_table={'height': '24rem', 'overflowY': 'auto'},
@@ -382,11 +385,14 @@ clients_profit = dbc.Card([
                         'textOverflow': 'ellipsis',
                         'text-align': 'left',
                         'font-family': 'sans-serif',
+                        'font-size': '14px',
                     },
                     style_header={
                         'backgroundColor': 'white',
                         'fontWeight': 'bold',
                         'text-align': 'left',
+                        'font-family': 'sans-serif',
+                        'font-size': '14px',
                         # 'font-'
                     },
                     page_action='none',
@@ -688,7 +694,6 @@ def update_top_product_graph(category, sub_category, segment, start_date, end_da
     ]
 )
 def update_top_clients_graph(category, sub_category, segment, start_date, end_date, sort_by, province):
-    print(province)
     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df, province)
     filtered_data = filtered_data.groupby(["Customer Segment", "Customer Name"]).agg({"Profit": 'sum'}).reset_index()
     if len(sort_by) != 0 and province is not None:
