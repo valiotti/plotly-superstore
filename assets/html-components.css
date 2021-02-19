@@ -2,6 +2,6 @@
     font-family: sans-serif;
 }
 
-h6 {
-    font-weight: 400 !important;
+h4, .h4, h6, .h6 {
+    font-weight: normal !important;
 }
