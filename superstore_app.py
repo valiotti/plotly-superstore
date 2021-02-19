@@ -12,9 +12,9 @@ from funcs import filter_data, kpi_rus
 from graphs_drawer import get_indicator_plot, get_top_province_graph, get_sales_profit_graph, data_bars, \
     get_available_categories, data_bars_diverging
 
-card_height_s = '14rem'
-card_height = '32rem'
-app = dash.Dash(external_stylesheets=["assets/html-components.css", dbc.themes.LITERA])
+card_height_s = '18rem'
+card_height = '34rem'
+app = dash.Dash(external_stylesheets=["assets/html-components.css", dbc.themes.BOOTSTRAP])
 
 server = app.server
 with open('config.json', 'r') as f:
@@ -110,19 +110,21 @@ kpis_indicators = dbc.Card(
     [
         dbc.CardBody(
             [
-                html.H2("KPI",
-                        style={'font-size': 24,
-                               'text-align': 'left',
-                               },
-                        ),
-                html.H6("Изменение ключевых показателей YoY по отношению к аналогичному месяцу прошлого года. "
-                        "На фоне отображена динамика за последний год",
-                        style={'font-size': 14,
-                               'text-align': 'left',
-                               'color': '#808080',
-                               'font-family': 'sans-serif',
-                               },
-                        ),
+                html.Label("KPI",
+                           style={'font-size': 24,
+                                  'text-align': 'left',
+                                  },
+                           ),
+                html.Br(),
+                html.Label("Изменение ключевых показателей YoY по отношению к аналогичному месяцу прошлого года."
+                           "На фоне отображена динамика за последний год",
+                           style={'font-size': 14,
+                                  'text-align': 'left',
+                                  'color': '#808080',
+                                  'font-family': 'sans-serif',
+                                  },
+                           ),
+                html.Br(),
                 dcc.Graph(id='profit-indicator',
                           style={
                               'height': '75%',
@@ -182,12 +184,12 @@ top_provinces = dbc.Card(
         dbc.CardBody([
             dbc.Row([
                 dbc.Col([
-                    html.H2("Топ провинций по продажам или прибыли",
-                            style={'font-size': 24,
-                                   'text-align': 'left',
-                                   },
-                            ),
-                    html.H6(
+                    html.Label("Топ провинций по продажам или прибыли",
+                               style={'font-size': 24,
+                                      'text-align': 'left',
+                                      },
+                               ),
+                    html.Label(
                         "Размер соответствует продажам или прибыли. Переключаться между продажами и прибылью можно с "
                         "помощью фильтра. Кликните на прямоугольник, чтобы отфильтровать по провинции.",
                         style={'font-size': 14,
@@ -214,12 +216,12 @@ sales_and_profit = dbc.Card([
     dbc.CardBody([
         dbc.Row([
             dbc.Col([
-                html.H2("Динамика прибыли и продаж",
-                        style={'font-size': 24,
-                               'text-align': 'left',
-                               },
-                        ),
-                html.H6(
+                html.Label("Динамика прибыли и продаж",
+                           style={'font-size': 24,
+                                  'text-align': 'left',
+                                  },
+                           ),
+                html.Label(
                     "Динамика прибыли и продаж за всё время. Жирными точками обозначены прибыль и продажи в выбранном "
                     "месяце и соответствующие данные за предыдущий год. Переключаться между прибылью и продажами можно "
                     "с помощью фильтра",
@@ -248,17 +250,17 @@ sales_and_profit = dbc.Card([
 
 sales_by_category = dbc.Card([
     dbc.CardBody([
-        html.H2("Прибыль и продажи по категориям",
-                style={'font-size': 24,
-                       'text-align': 'left',
-                       },
-                ),
-        html.H6("Прибыль и продажи в категории. Можно изменять сортировку с помощью заголовков столбцов.",
-                style={'font-size': 14,
-                       'text-align': 'left',
-                       'color': '#808080'
-                       },
-                ),
+        html.Label("Прибыль и продажи по категориям",
+                   style={'font-size': 24,
+                          'text-align': 'left',
+                          },
+                   ),
+        html.Label("Прибыль и продажи в категории. Можно изменять сортировку с помощью заголовков столбцов.",
+                   style={'font-size': 14,
+                          'text-align': 'left',
+                          'color': '#808080'
+                          },
+                   ),
         dash_table.DataTable(
             id='category-sales',
             sort_action='native',
@@ -294,17 +296,17 @@ sales_by_category = dbc.Card([
 
 sales_by_product = dbc.Card([
     dbc.CardBody([
-        html.H2("Топ продуктов по прибыли",
-                style={'font-size': 24,
-                       'text-align': 'left',
-                       },
-                ),
-        html.H6("Продукты, отсортированные по прибыли. Можно изменять сортировку с помощью заголовков столбцов.",
-                style={'font-size': 14,
-                       'text-align': 'left',
-                       'color': '#808080'
-                       },
-                ),
+        html.Label("Топ продуктов по прибыли",
+                   style={'font-size': 24,
+                          'text-align': 'left',
+                          },
+                   ),
+        html.Label("Продукты, отсортированные по прибыли. Можно изменять сортировку с помощью заголовков столбцов.",
+                   style={'font-size': 14,
+                          'text-align': 'left',
+                          'color': '#808080'
+                          },
+                   ),
         dash_table.DataTable(
             id='top-product-sales',
             sort_action='native',
@@ -343,18 +345,18 @@ clients_profit = dbc.Card([
     dbc.CardBody([
         dbc.Row([
             dbc.Col([
-                html.H2("Топ клиентов по прибыли",
-                        style={'font-size': 24,
-                               'text-align': 'left',
-                               },
-                        ),
-                html.H6("Имена клиентов, отсортированные по прибыли. Выберите из списка определенный сегмент, "
-                        "чтобы увидеть клиентов только по нему.",
-                        style={'font-size': 14,
-                               'text-align': 'left',
-                               'color': '#808080'
-                               },
-                        ),
+                html.Label("Топ клиентов по прибыли",
+                           style={'font-size': 24,
+                                  'text-align': 'left',
+                                  },
+                           ),
+                html.Label("Имена клиентов, отсортированные по прибыли. Выберите из списка определенный сегмент, "
+                           "чтобы увидеть клиентов только по нему.",
+                           style={'font-size': 14,
+                                  'text-align': 'left',
+                                  'color': '#808080'
+                                  },
+                           ),
             ], width=8),
             dbc.Col([
                 segment_filter,
@@ -404,14 +406,15 @@ clients_profit = dbc.Card([
 app.layout = html.Div(children=[
     dbc.Row([
         dbc.Col([
-            html.H2(
+            html.Label(
                 config_file['themeSettings'][0]['title'],
                 style={
                     "text-align": "left",
                     "font-size": 24,
                 }
             ),
-            html.H4(
+            html.Br(),
+            html.Label(
                 config_file['themeSettings'][0]['description'],
                 style={
                     "text-align": "left",
@@ -441,18 +444,18 @@ app.layout = html.Div(children=[
     ], style={'margin-bottom': '16px'}),
     dbc.Row([
         dbc.Col([
-            html.H2("Анализ продуктов и клиентов",
-                    style={'font-size': 24,
-                           'text-align': 'left',
-                           },
-                    ),
-            html.H6("Обзор наиболее эффективных продуктов и клиентов по продажам и прибыли с группировкой по "
-                    "товарным категориям и клиентским сегментам.",
-                    style={'font-size': 14,
-                           'text-align': 'left',
-                           'color': '#808080'
-                           },
-                    ),
+            html.Label("Анализ продуктов и клиентов\n",
+                       style={'font-size': 24,
+                              'text-align': 'left',
+                              },
+                       ),
+            html.Label("Обзор наиболее эффективных продуктов и клиентов по продажам и прибыли с группировкой по "
+                       "товарным категориям и клиентским сегментам.",
+                       style={'font-size': 14,
+                              'text-align': 'left',
+                              'color': '#808080'
+                              },
+                       ),
         ], width=8),
         dbc.Col([
             dbc.Row([
