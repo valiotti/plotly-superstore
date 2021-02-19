@@ -16,7 +16,7 @@ card_height_s = '14rem'
 card_height = '32rem'
 app = dash.Dash(external_stylesheets=["assets/html-components.css", dbc.themes.LITERA])
 
-server=app.server
+server = app.server
 with open('config.json', 'r') as f:
     config_file = json.load(f)
 
@@ -119,7 +119,8 @@ kpis_indicators = dbc.Card(
                         "На фоне отображена динамика за последний год",
                         style={'font-size': 14,
                                'text-align': 'left',
-                               'color': '#808080'
+                               'color': '#808080',
+                               'font-family': 'sans-serif',
                                },
                         ),
                 dcc.Graph(id='profit-indicator',
@@ -128,6 +129,7 @@ kpis_indicators = dbc.Card(
                               'width': '16%',
                               'float': 'left',
                               'margin-right': '8px',
+                              'font-family': 'sans-serif',
                           }),
                 dcc.Graph(id='sales-indicator',
                           style={
@@ -135,6 +137,7 @@ kpis_indicators = dbc.Card(
                               'width': '16%',
                               'float': 'left',
                               'margin-right': '8px',
+                              'font-family': 'sans-serif',
                           }),
                 dcc.Graph(id='orders-indicator',
                           style={
@@ -142,6 +145,7 @@ kpis_indicators = dbc.Card(
                               'width': '16%',
                               'float': 'left',
                               'margin-right': '8px',
+                              'font-family': 'sans-serif',
                           }),
                 dcc.Graph(id='discount-indicator',
                           style={
@@ -149,6 +153,7 @@ kpis_indicators = dbc.Card(
                               'width': '16%',
                               'float': 'left',
                               'margin-right': '8px',
+                              'font-family': 'sans-serif',
                           }),
                 dcc.Graph(id='clients-indicator',
                           style={
@@ -156,7 +161,7 @@ kpis_indicators = dbc.Card(
                               'width': '16%',
                               'float': 'left',
                               'margin-right': '8px',
-
+                              'font-family': 'sans-serif',
                           }),
                 dcc.Graph(id='sales-per-client-indicator',
                           style={
@@ -273,7 +278,6 @@ sales_by_category = dbc.Card([
                 'backgroundColor': 'white',
                 'fontWeight': 'bold',
                 'text-align': 'left',
-
             },
             page_action='none',
             style_table={'height': '24rem', 'overflowY': 'auto'}
@@ -487,6 +491,8 @@ def update_sub_category_dropdown(category):
 )
 def update_category_dropdown(category):
     return get_available_categories(category, df, "Product Category")
+
+
 #
 @app.callback(
     Output('profit-indicator', 'figure'),

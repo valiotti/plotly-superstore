@@ -1,12 +1,3 @@
 * {
-    font-family: 'Roboto';
-}
-
-h6, .h6, h4, .h4 {
-    font-weight: 400;
-    margin-bottom: 16px;
-}
-
-h2, .h2 {
-    font-weight: 700;
+    font-family: sans-serif;
 }
