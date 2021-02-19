@@ -24,8 +24,9 @@ def filter_data(category, sub_category, segment, start_date, end_date, df, provi
     if segment is not None:
         filtered_df = filtered_df[filtered_df["Customer Segment"] == segment]
     if province is not None:
-        if province["points"][0]["entry"] == '':
-            filtered_df = filtered_df[filtered_df["Province"] == province["points"][0]["id"]]
+        if "entry" in province["points"][0].keys():
+            if province["points"][0]["entry"] == '':
+                filtered_df = filtered_df[filtered_df["Province"] == province["points"][0]["customdata"][0]]
     if start_date is not None:
         if type(start_date) == str:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')

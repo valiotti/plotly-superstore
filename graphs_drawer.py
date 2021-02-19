@@ -38,7 +38,7 @@ def create_figure(cy_value, yoy_value, kpi, current_year_data):
                 fill='tozeroy',
                 line_color='#E8E8E8',
                 name='',
-                hoverinfo='skip'
+                hoverinfo='skip',
             )
         )
     elif kpi in ["Customer Name"]:
@@ -153,12 +153,11 @@ def get_indicator_plot(df, start_date, end_date, kpi, segment=None, category=Non
 
 
 def get_top_province_graph(df, start_date, end_date, segment=None, category=None, sub_category=None, type="Sales"):
-    names = ["Province"]
-    names.extend(list(df["Province"]))
     filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df, None)
     filtered_df = filtered_df.groupby(["Province"]).agg({"Profit": 'sum', "Sales": 'sum'}).reset_index()
-    fig = px.treemap(filtered_df, path=['Province'], values=type, color=type,
-                     color_continuous_scale=px.colors.sequential.Blues,
+    filtered_df["Sales_lbls"] = ["{}<br>${:.0f}".format(y[1]["Province"],y[1]["Sales"]) for y in filtered_df.iterrows()]
+    fig = px.treemap(filtered_df, path=['Sales_lbls'], values='Sales', custom_data=["Province"], names=type,
+                     color=type, color_continuous_scale=px.colors.sequential.Blues,
                      )
 
     fig.update_layout(
@@ -166,7 +165,7 @@ def get_top_province_graph(df, start_date, end_date, segment=None, category=None
         autosize=True,
     )
 
-    fig.data[0].hovertemplate = '<b></b>%{label}' + '<br>' + kpi_rus[type] + ' %{value:$.0f}'
+    fig.data[0].hovertemplate = '<b></b>%{label}'
     return fig
 
 

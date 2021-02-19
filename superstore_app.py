@@ -688,6 +688,7 @@ def update_top_product_graph(category, sub_category, segment, start_date, end_da
     ]
 )
 def update_top_clients_graph(category, sub_category, segment, start_date, end_date, sort_by, province):
+    print(province)
     filtered_data = filter_data(category, sub_category, segment, start_date, end_date, df, province)
     filtered_data = filtered_data.groupby(["Customer Segment", "Customer Name"]).agg({"Profit": 'sum'}).reset_index()
     if len(sort_by) != 0 and province is not None:
