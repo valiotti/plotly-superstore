@@ -156,7 +156,7 @@ def get_top_province_graph(df, start_date, end_date, segment=None, category=None
     filtered_df = filter_data(category, sub_category, segment, start_date, end_date, df, None)
     filtered_df = filtered_df.groupby(["Province"]).agg({"Profit": 'sum', "Sales": 'sum'}).reset_index()
     filtered_df["Sales_lbls"] = ["{}<br>${:.0f}".format(y[1]["Province"],y[1]["Sales"]) for y in filtered_df.iterrows()]
-    fig = px.treemap(filtered_df, path=['Sales_lbls'], values='Sales', custom_data=["Province"], names=type,
+    fig = px.treemap(filtered_df, path=['Sales_lbls'], values=type, custom_data=["Province"], names=type,
                      color=type, color_continuous_scale=px.colors.sequential.Blues,
                      )
 
@@ -191,7 +191,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              name=kpi_rus[type],
                              line={'color': '#0074D9'},
                              text=filtered_df["formatted_date"],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.0f}'
+                             hovertemplate='Date %{text}<br>Value: %{y:$.0f}'
                              )
                   )
 
@@ -201,7 +201,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              marker={'size': 10,
                                      'color': '#0074D9'},
                              text=[start_date.strftime("%b-%Y")],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.0f}'
+                             hovertemplate='Date %{text}<br>Value: %{y:$.0f}'
                              ))
     fig.add_trace(go.Scatter(x=filtered_df_ly["Order Date"].values,
                              y=yoy_value,
@@ -210,7 +210,7 @@ def get_sales_profit_graph(df, start_date, end_date, segment=None, category=None
                              marker={'size': 10,
                                      'color': '#77dde7'},
                              text=[prev_start_date.strftime("%b-%Y")],
-                             hovertemplate='Date %{text}<br>Sales: %{y:$.0f}'
+                             hovertemplate='Date %{text}<br>Value: %{y:$.0f}'
                              ))
 
     fig.update_layout(
